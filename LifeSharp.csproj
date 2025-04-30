@@ -8,17 +8,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CSFML" Version="2.6.1" />
-      <PackageReference Include="SFML.Graphics" Version="2.6.1" />
-      <PackageReference Include="SFML.Net" Version="2.6.1" />
-      <PackageReference Include="SFML.System" Version="2.6.1" />
-      <PackageReference Include="SFML.Window" Version="2.6.1" />
+        <PackageReference Include="CSFML" Version="2.6.1"/>
+        <PackageReference Include="SFML.Graphics" Version="2.6.1"/>
+        <PackageReference Include="SFML.Net" Version="2.6.1"/>
+        <PackageReference Include="SFML.System" Version="2.6.1"/>
+        <PackageReference Include="SFML.Window" Version="2.6.1"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="resources\font.ttf">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
+        <Content Include="resources\font.ttf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
 </Project>

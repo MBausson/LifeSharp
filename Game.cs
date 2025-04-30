@@ -20,24 +20,22 @@ public class Game
     {
         var boardCopy = (bool[,])Board.Clone();
 
-        for (int y = 0; y < Board.GetLength(0); y++)
+        for (var y = 0; y < Board.GetLength(0); y++)
+        for (var x = 0; x < Board.GetLength(1); x++)
         {
-            for (int x = 0; x < Board.GetLength(1); x++)
+            var neighbors = GetAliveNeighbors(x, y);
+            var cellValue = Board[y, x];
+
+            if (cellValue)
             {
-                var neighbors = GetAliveNeighbors(x, y);
-                var cellValue = Board[y, x];
-
-                if (cellValue)
-                {
-                    if (!(neighbors is 2 or 3)) cellValue = false;
-                }
-                else
-                {
-                    if (neighbors == 3) cellValue = true;
-                }
-
-                boardCopy[y, x] = cellValue;
+                if (!(neighbors is 2 or 3)) cellValue = false;
             }
+            else
+            {
+                if (neighbors == 3) cellValue = true;
+            }
+
+            boardCopy[y, x] = cellValue;
         }
 
         Board = boardCopy;
@@ -45,16 +43,18 @@ public class Game
 
     public int GetAliveNeighbors(int x, int y)
     {
-        return new [] {
+        return new[]
+        {
             SafeBoardAccess(x - 1, y - 1), SafeBoardAccess(x, y - 1), SafeBoardAccess(x + 1, y - 1),
             SafeBoardAccess(x - 1, y), SafeBoardAccess(x + 1, y),
-            SafeBoardAccess(x - 1, y + 1), SafeBoardAccess(x , y + 1), SafeBoardAccess(x + 1, y + 1)
+            SafeBoardAccess(x - 1, y + 1), SafeBoardAccess(x, y + 1), SafeBoardAccess(x + 1, y + 1)
         }.Count(v => v);
     }
 
     public bool SwitchValue(int x, int y)
     {
-        if (x < 0 || x >= Size || y < 0 || y >= Size) throw new ArgumentException($"Value position out of range for the board size");
+        if (x < 0 || x >= Size || y < 0 || y >= Size)
+            throw new ArgumentException($"Value position out of range for the board size");
 
         var originalValue = Board[y, x];
 
