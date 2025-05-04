@@ -2,10 +2,10 @@
 
 public class GameState
 {
-    public float StepSpeed = 1;
-    public bool DrawNeighbors;
-    public bool DrawGrid;
     public bool DrawGameState;
-    public bool KeepIterating;
+    public bool DrawGrid;
+    public bool DrawNeighbors;
     public long Iterations;
+    public bool KeepIterating;
+    public float StepSpeed = 1;
 }

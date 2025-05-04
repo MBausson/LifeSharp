@@ -6,34 +6,27 @@ namespace LifeSharp;
 
 public class GameWindow
 {
-    private readonly Vector2u _size;
-    private readonly RenderWindow _window;
-    private readonly Game _game;
-    private readonly int _cellSize = 10;
-    private readonly Font _font = new("resources/font.ttf");
-    private readonly GameState _gameState = new();
+    private const int CellSize = 10;
     private readonly Clock _clock = new();
-    private Color _clearColor = Color.Black;
-    private Color _gridColor = new(255, 255, 255, 100);
+    private readonly Game _game;
+    private readonly GameState _gameState = new();
+    private readonly Graphics _graphics;
+    private readonly RenderWindow _window;
+    private readonly Vector2u _windowSize;
 
-    private readonly RectangleShape _cellShape = new(new Vector2f(0, 0))
+    public GameWindow(Vector2u windowSize)
     {
-        FillColor = Color.White,
-        OutlineColor = Color.Black,
-        OutlineThickness = 1
-    };
+        _windowSize = windowSize;
+        _window = new RenderWindow(new VideoMode(_windowSize.X, _windowSize.Y), "LifeSharp !",
+            Styles.Titlebar | Styles.Close);
 
-    public GameWindow(Vector2u size)
-    {
-        _size = size;
-        _cellShape.Size = new Vector2f(_cellSize, _cellSize);
-        _window = new RenderWindow(new VideoMode(_size.X, _size.Y), "LifeSharp !", Styles.Titlebar | Styles.Close);
+        _graphics = new Graphics(new Vector2f(CellSize, CellSize));
 
         _window.Closed += (_, _) => _window.Close();
         _window.KeyPressed += WindowOnKeyPressed;
         _window.MouseButtonPressed += WindowOnMouseButtonPressed;
 
-        _game = new Game((int)_size.X / _cellSize);
+        _game = new Game((int)_windowSize.X / CellSize);
     }
 
     public void Run()
@@ -46,7 +39,7 @@ public class GameWindow
             elapsedTime += deltaTime;
 
             _window.DispatchEvents();
-            _window.Clear(_clearColor);
+            _window.Clear(_graphics.ClearColor);
 
             DrawBoard();
             if (_gameState.DrawNeighbors) DrawBoardNeighbors();
@@ -72,7 +65,7 @@ public class GameWindow
             var value = _game.Board[y, x];
 
             if (value)
-                _window.Draw(GetCellShape(new Vector2f(x * 10, y * 10)));
+                _window.Draw(_graphics.GetCellShape(new Vector2f(x * 10, y * 10)));
         }
     }
 
@@ -83,7 +76,7 @@ public class GameWindow
         {
             var n = _game.GetAliveNeighbors(x, y);
 
-            _window.Draw(TextShape(new Vector2f(x * 10, y * 10), n.ToString()));
+            _window.Draw(_graphics.GetNeighborsTextShape(new Vector2f(x * 10, y * 10), n.ToString()));
         }
     }
 
@@ -92,44 +85,30 @@ public class GameWindow
         //  Horizontal lines
         var line = new RectangleShape
         {
-            FillColor = _gridColor,
-            Size = new Vector2f(_cellSize * _size.X, 1)
+            FillColor = _graphics.GridColor,
+            Size = new Vector2f(CellSize * _windowSize.X, 1)
         };
 
-        for (var y = 0; y < _size.Y; y++)
+        for (var y = 0; y < _windowSize.Y; y++)
         {
-            line.Position = new Vector2f(0, y * _cellSize);
+            line.Position = new Vector2f(0, y * CellSize);
             _window.Draw(line);
         }
 
         //  Vertical lines
-        line.Size = new Vector2f(1, _cellSize * _size.Y);
+        line.Size = new Vector2f(1, CellSize * _windowSize.Y);
 
-        for (var x = 0; x < _size.X; x++)
+        for (var x = 0; x < _windowSize.X; x++)
         {
-            line.Position = new Vector2f(x * _cellSize, 0);
+            line.Position = new Vector2f(x * CellSize, 0);
             _window.Draw(line);
         }
     }
 
     private void DrawGameState()
     {
-        var stepSpeedText = new Text($"Speed : {_gameState.StepSpeed:F1}", _font)
-        {
-            FillColor = Color.Red,
-            Position = new Vector2f(10, 10),
-            CharacterSize = 24
-        };
-
-        var iterationsText = new Text($"Iterations : {_gameState.Iterations}", _font)
-        {
-            FillColor = Color.Red,
-            Position = new Vector2f(10, 34),
-            CharacterSize = 24
-        };
-
-        _window.Draw(stepSpeedText);
-        _window.Draw(iterationsText);
+        _window.Draw(_graphics.GetGameStateTextShape($"Speed : {_gameState.StepSpeed:F1}", new Vector2f(10, 10)));
+        _window.Draw(_graphics.GetGameStateTextShape($"Iterations : {_gameState.Iterations}", new Vector2f(10, 34)));
     }
 
     private void WindowOnMouseButtonPressed(object? _, MouseButtonEventArgs e)
@@ -184,39 +163,8 @@ public class GameWindow
 
             //  Toggle to display the game board in black or white
             case Keyboard.Key.LShift:
-                ToggleBlackWhite();
+                _graphics.ToggleColorMode();
                 break;
         }
-    }
-
-    private void ToggleBlackWhite()
-    {
-        if (_clearColor == Color.Black)
-        {
-            _clearColor = Color.White;
-            _cellShape.FillColor = Color.Black;
-            _gridColor = new Color(0, 0, 0, 100);
-            return;
-        }
-
-        _clearColor = Color.Black;
-        _cellShape.FillColor = Color.White;
-        _gridColor = new Color(255, 255, 255, 100);
-    }
-
-    private Text TextShape(Vector2f position, string text)
-    {
-        return new Text(text, _font)
-        {
-            Position = position,
-            FillColor = Color.Green,
-            CharacterSize = 11
-        };
-    }
-
-    private RectangleShape GetCellShape(Vector2f position)
-    {
-        _cellShape.Position = position;
-        return _cellShape;
     }
 }

@@ -2,7 +2,6 @@
 
 public class Game
 {
-    public int Size { get; private set; }
     public bool[,] Board;
 
     public Game(int size)
@@ -10,6 +9,8 @@ public class Game
         Size = size;
         Board = new bool[Size, Size];
     }
+
+    public int Size { get; }
 
     public void ClearBoard()
     {
@@ -54,7 +55,7 @@ public class Game
     public bool SwitchValue(int x, int y)
     {
         if (x < 0 || x >= Size || y < 0 || y >= Size)
-            throw new ArgumentException($"Value position out of range for the board size");
+            throw new ArgumentException("Value position out of range for the board size");
 
         var originalValue = Board[y, x];
 
