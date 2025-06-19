@@ -44,24 +44,22 @@ public class Game
 
     public int GetAliveNeighbors(int x, int y)
     {
-        return new[]
-        {
+        ReadOnlySpan<bool> arr =
+        [
             SafeBoardAccess(x - 1, y - 1), SafeBoardAccess(x, y - 1), SafeBoardAccess(x + 1, y - 1),
             SafeBoardAccess(x - 1, y), SafeBoardAccess(x + 1, y),
             SafeBoardAccess(x - 1, y + 1), SafeBoardAccess(x, y + 1), SafeBoardAccess(x + 1, y + 1)
-        }.Count(v => v);
+        ];
+
+        return arr.Count(true);
     }
 
-    public bool SwitchValue(int x, int y)
+    public void SwitchValue(int x, int y)
     {
         if (x < 0 || x >= Size || y < 0 || y >= Size)
             throw new ArgumentException("Value position out of range for the board size");
 
-        var originalValue = Board[y, x];
-
-        Board[y, x] = !originalValue;
-
-        return !originalValue;
+        Board[y, x] = !Board[y, x];
     }
 
     private bool SafeBoardAccess(int x, int y)
