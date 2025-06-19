@@ -22,7 +22,8 @@ public class Graphics(Vector2f cellSize)
     private Text NeighborsTextShape { get; } = new()
     {
         FillColor = Color.Green,
-        CharacterSize = 11
+        CharacterSize = 11,
+        Font = Font
     };
 
     private Text GameStateTextShape { get; } = new()
